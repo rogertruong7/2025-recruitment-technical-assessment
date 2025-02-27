@@ -131,28 +131,30 @@ def create_entry():
 @app.route("/summary", methods=["GET"])
 def summary():
     ingredients = {}
-    result = { "name": "", "cookTime": 0, "ingredients": [] }
+    result = {"name": "", "cookTime": 0, "ingredients": []}
 
-    def recursive_recipes(entry_data, total_cook_time=0):
+    def recursive_recipes(entry_data, total_cook_time=0, quantity=1):
         print(entry_data)
         requiredItems = entry_data["requiredItems"]
         for item in requiredItems:
             item_name = item["name"]
-            item_quantity = item["quantity"]
+            item_quantity = item["quantity"] * quantity
 
             # if item is in cookbook, check if ingredient or recipe
             if item_name in cookbook:
                 item_data = cookbook[item_name]
                 # if ingredient, add to ingredients
                 if item_data["type"] == "ingredient":
-                    ingredients[item_name] = ingredients.get(item_name, 0) + item_quantity
+                    ingredients[item_name] = (
+                        ingredients.get(item_name, 0) + item_quantity
+                    )
                     # if ingredient add cook time * item quantity
                     total_cook_time += item_quantity * item_data["cookTime"]
                     continue
                 else:
 
                     total_cook_time = recursive_recipes(
-                        cookbook[item_name], total_cook_time
+                        cookbook[item_name], total_cook_time, item_quantity
                     )
             else:
                 raise BadRequest(f"'{item_name}' is not in the cookbook.")
@@ -175,7 +177,6 @@ def summary():
         ]
         return result, 200
     except BadRequest as e:
-        # Flask automatically handles the 400 status code for BadRequest exceptions
         return f"Error: {str(e)}", 400
     except Exception as e:
         return "Internal server error", 500
