@@ -18,6 +18,21 @@ describe("Task 1", () => {
       expect(response.body).toStrictEqual({ msg: "Alpha Alfredo" });
     });
 
+    it("example3", async () => {
+      const response = await getTask1("alpHa-alF      Redo");
+      expect(response.body).toStrictEqual({ msg: "Alpha Alf Redo" });
+    });
+    it("example4", async () => {
+      const response = await getTask1("alpHa_-__alF_     ReDo");
+      expect(response.body).toStrictEqual({ msg: "Alpha Alf Redo" });
+    });
+    it("example5", async () => {
+      const response = await getTask1(
+        "alpHa_-__a@@@@@!!!^&^&&*^*&^lF_  \n\n\n   ReDo       \n"
+      );
+      expect(response.body).toStrictEqual({ msg: "Alpha Alf Redo" });
+    });
+
     it("error case", async () => {
       const response = await getTask1("");
       expect(response.status).toBe(400);
@@ -93,6 +108,103 @@ describe("Task 2", () => {
       });
       expect(resp3.status).toBe(400);
     });
+    it("Add Ingredient with Zero CookTime", async () => {
+      const resp = await putTask2({
+        type: "ingredient",
+        name: "Tomato",
+        cookTime: 0,
+      });
+      expect(resp.status).toBe(200);
+    });
+
+    it("Add Ingredient with Missing CookTime", async () => {
+      const resp = await putTask2({
+        type: "ingredient",
+        name: "Carrot",
+      });
+      expect(resp.status).toBe(400);
+    });
+
+    it("Add Ingredient with Missing Name", async () => {
+      const resp = await putTask2({
+        type: "ingredient",
+        cookTime: 5,
+      });
+      expect(resp.status).toBe(400);
+    });
+
+    it("Add Recipe with Missing Required Items", async () => {
+      const resp = await putTask2({
+        type: "recipe",
+        name: "Soup",
+      });
+      expect(resp.status).toBe(400);
+    });
+
+    it("Add Recipe with Invalid Required Item Quantity", async () => {
+      const resp = await putTask2({
+        type: "recipe",
+        name: "Stew",
+        requiredItems: [{ name: "Potato", quantity: -1 }],
+      });
+      expect(resp.status).toBe(400);
+    });
+
+    it("Add Recipe with Missing Name", async () => {
+      const resp = await putTask2({
+        type: "recipe",
+        requiredItems: [{ name: "Salt", quantity: 1 }],
+      });
+      expect(resp.status).toBe(400);
+    });
+
+    it("Check Response Format for Ingredient", async () => {
+      const resp = await putTask2({
+        type: "ingredient",
+        name: "Cucumber",
+        cookTime: 3,
+      });
+      expect(resp.status).toBe(200);
+      expect(resp.body).toEqual({});
+    });
+
+    it("Check Response Format for Recipe", async () => {
+      const resp = await putTask2({
+        type: "recipe",
+        name: "Salad",
+        requiredItems: [{ name: "Cucumber", quantity: 2 }],
+      });
+      expect(resp.status).toBe(200);
+      expect(resp.body).toEqual({});
+    });
+
+    it("Check Response Format for requiredItems", async () => {
+      const resp = await putTask2({
+        type: "recipe",
+        name: "Salad",
+        requiredItems: { name: "Cucumber", quantity: 2 },
+      });
+      expect(resp.status).toBe(400);
+      expect(resp.body).toEqual({});
+    });
+
+    it("Ensure CookTime Validation for Ingredients", async () => {
+      const resp = await putTask2({
+        type: "ingredient",
+        name: "Apple",
+        cookTime: "string",
+      });
+      expect(resp.status).toBe(400);
+    });
+
+    it("Ensure Quantity Validation for Recipe Items", async () => {
+      const resp = await putTask2({
+        type: "recipe",
+        name: "Pasta",
+        requiredItems: [{ name: "Spaghetti", quantity: "string" }],
+      });
+      expect(resp.status).toBe(400);
+    });
   });
 });
 
@@ -156,6 +268,153 @@ describe("Task 3", () => {
 
       const resp3 = await getTask3("Skibidi");
       expect(resp3.status).toBe(200);
+    });
+
+    it("Bro cooked 2", async () => {
+      const entries = [
+        {
+          type: "recipe",
+          name: "Skibidi Spaghetti1",
+          requiredItems: [
+            { name: "Meatball1", quantity: 3 },
+            { name: "Pasta1", quantity: 1 },
+            { name: "Tomato1", quantity: 2 },
+          ],
+        },
+        {
+          type: "recipe",
+          name: "Meatball1",
+          requiredItems: [
+            { name: "Beef1", quantity: 2 },
+            { name: "Egg1", quantity: 1 },
+          ],
+        },
+        {
+          type: "recipe",
+          name: "Pasta1",
+          requiredItems: [
+            { name: "Flour1", quantity: 3 },
+            { name: "Egg1", quantity: 1 },
+          ],
+        },
+        { type: "ingredient", name: "Beef1", cookTime: 5 },
+        { type: "ingredient", name: "Egg1", cookTime: 3 },
+        { type: "ingredient", name: "Flour1", cookTime: 0 },
+        { type: "ingredient", name: "Tomato1", cookTime: 2 },
+      ];
+
+      for (const entry of entries) {
+        const resp = await postEntry(entry);
+        expect(resp.status).toBe(200);
+      }
+
+      const resp3 = await getTask3("Skibidi Spaghetti1");
+      expect(resp3.status).toBe(200);
+
+      expect(resp3.body).toEqual({
+        name: "Skibidi Spaghetti1",
+        cookTime: 46,
+        ingredients: expect.arrayContaining([
+          { name: "Beef1", quantity: 6 },
+          { name: "Flour1", quantity: 3 },
+          { name: "Egg1", quantity: 4 },
+          { name: "Tomato1", quantity: 2 },
+        ]),
+      });
+    });
+
+    it("Bro cooked the entire recipe tree with many ingredients and recursive recipes", async () => {
+      const entries = [
+        {
+          type: "recipe",
+          name: "Mega Feast",
+          requiredItems: [
+            { name: "Big Meatball", quantity: 4 }, // 356
+            { name: "Super Pasta", quantity: 3 },
+            { name: "Tomato Sauce", quantity: 6 },
+            { name: "Veggie Salad", quantity: 2 },
+          ],
+        },
+        {
+          type: "recipe",
+          name: "Big Meatball", // 89 cooktime
+          requiredItems: [
+            { name: "Ground Beef", quantity: 5 },
+            { name: "Egg", quantity: 3 },
+            { name: "Breadcrumbs", quantity: 6 },
+            { name: "Spices", quantity: 2 },
+          ],
+        },
+        {
+          type: "recipe",
+          name: "Super Pasta",
+          requiredItems: [
+            { name: "Flour", quantity: 10 },
+            { name: "Egg", quantity: 5 },
+            { name: "Olive Oil", quantity: 3 },
+            { name: "Garlic", quantity: 4 },
+          ],
+        },
+        {
+          type: "recipe",
+          name: "Tomato Sauce",
+          requiredItems: [
+            { name: "Tomatoes", quantity: 8 },
+            { name: "Garlic", quantity: 3 },
+            { name: "Onion", quantity: 2 },
+            { name: "Olive Oil", quantity: 2 },
+          ],
+        },
+        {
+          type: "recipe",
+          name: "Veggie Salad",
+          requiredItems: [
+            { name: "Lettuce", quantity: 2 },
+            { name: "Cucumber", quantity: 3 },
+            { name: "Tomato", quantity: 4 },
+            { name: "Olive Oil", quantity: 1 },
+          ],
+        },
+        { type: "ingredient", name: "Ground Beef", cookTime: 10 },
+        { type: "ingredient", name: "Egg", cookTime: 3 },
+        { type: "ingredient", name: "Breadcrumbs", cookTime: 5 },
+        { type: "ingredient", name: "Spices", cookTime: 0 },
+        { type: "ingredient", name: "Flour", cookTime: 0 },
+        { type: "ingredient", name: "Olive Oil", cookTime: 2 },
+        { type: "ingredient", name: "Garlic", cookTime: 1 },
+        { type: "ingredient", name: "Tomatoes", cookTime: 4 },
+        { type: "ingredient", name: "Onion", cookTime: 3 },
+        { type: "ingredient", name: "Lettuce", cookTime: 1 },
+        { type: "ingredient", name: "Cucumber", cookTime: 2 },
+        { type: "ingredient", name: "Tomato", cookTime: 2 },
+      ];
+
+      for (const entry of entries) {
+        const resp6 = await postEntry(entry);
+        expect(resp6.status).toBe(200);
+      }
+
+      const resp3 = await getTask3("Mega Feast");
+      expect(resp3.status).toBe(200);
+
+      expect(resp3.body).toEqual({
+        name: "Mega Feast",
+        cookTime: 737, // Sum of all cook times
+        ingredients: expect.arrayContaining([
+          { name: "Ground Beef", quantity: 20 }, // 5 * 4 (Big Meatball x4)
+          { name: "Egg", quantity: 27 }, // (3 * 4 for Big Meatball) + (5 * 3 for Super Pasta)
+          { name: "Breadcrumbs", quantity: 24 }, // 6 * 4 (Big Meatball x4)
+          { name: "Spices", quantity: 8 }, // 2 * 4 (Big Meatball x4)
+          { name: "Flour", quantity: 30 }, // 10 * 3 (Super Pasta x3)
+          { name: "Olive Oil", quantity: 23 }, // (3 * 3 for Super Pasta) + (2 * 6 for Tomato Sauce) + (1 * 2 for Veggie Salad)
+          { name: "Garlic", quantity: 30 }, // (4 * 3 for Super Pasta) + (3 * 2 for Tomato Sauce)
+          { name: "Tomatoes", quantity: 48 }, // 8 * 6 (Tomato Sauce x3)
+          { name: "Onion", quantity: 12 }, // 2 * 6 (Tomato Sauce x3)
+          { name: "Lettuce", quantity: 4 }, // Veggie Salad 2x2
+          { name: "Cucumber", quantity: 6 }, // Veggie Salad x2
+          { name: "Tomato", quantity: 8 }, // (4 * 2 for Veggie Salad)
+        ]),
+      });
     });
   });
 });
