@@ -327,66 +327,66 @@ describe("Task 3", () => {
       const entries = [
         {
           type: "recipe",
-          name: "Mega Feast",
+          name: "Mega Feast2",
           requiredItems: [
-            { name: "Big Meatball", quantity: 4 }, // 356
-            { name: "Super Pasta", quantity: 3 },
-            { name: "Tomato Sauce", quantity: 6 },
-            { name: "Veggie Salad", quantity: 2 },
+            { name: "Big Meatball2", quantity: 4 }, // 356
+            { name: "Super Pasta2", quantity: 3 },
+            { name: "Tomato Sauce2", quantity: 6 },
+            { name: "Veggie Salad2", quantity: 2 },
           ],
         },
         {
           type: "recipe",
-          name: "Big Meatball", // 89 cooktime
+          name: "Big Meatball2", // 89 cooktime
           requiredItems: [
-            { name: "Ground Beef", quantity: 5 },
-            { name: "Egg", quantity: 3 },
-            { name: "Breadcrumbs", quantity: 6 },
-            { name: "Spices", quantity: 2 },
+            { name: "Ground Beef2", quantity: 5 },
+            { name: "Egg2", quantity: 3 },
+            { name: "Breadcrumbs2", quantity: 6 },
+            { name: "Spices2", quantity: 2 },
           ],
         },
         {
           type: "recipe",
-          name: "Super Pasta",
+          name: "Super Pasta2",
           requiredItems: [
-            { name: "Flour", quantity: 10 },
-            { name: "Egg", quantity: 5 },
-            { name: "Olive Oil", quantity: 3 },
-            { name: "Garlic", quantity: 4 },
+            { name: "Flour2", quantity: 10 },
+            { name: "Egg2", quantity: 5 },
+            { name: "Olive Oil2", quantity: 3 },
+            { name: "Garlic2", quantity: 4 },
           ],
         },
         {
           type: "recipe",
-          name: "Tomato Sauce",
+          name: "Tomato Sauce2",
           requiredItems: [
-            { name: "Tomatoes", quantity: 8 },
-            { name: "Garlic", quantity: 3 },
-            { name: "Onion", quantity: 2 },
-            { name: "Olive Oil", quantity: 2 },
+            { name: "Tomatoes2", quantity: 8 },
+            { name: "Garlic2", quantity: 3 },
+            { name: "Onion2", quantity: 2 },
+            { name: "Olive Oil2", quantity: 2 },
           ],
         },
         {
           type: "recipe",
-          name: "Veggie Salad",
+          name: "Veggie Salad2",
           requiredItems: [
-            { name: "Lettuce", quantity: 2 },
-            { name: "Cucumber", quantity: 3 },
-            { name: "Tomato", quantity: 4 },
-            { name: "Olive Oil", quantity: 1 },
+            { name: "Lettuce2", quantity: 2 },
+            { name: "Cucumber2", quantity: 3 },
+            { name: "Tomato2", quantity: 4 },
+            { name: "Olive Oil2", quantity: 1 },
           ],
         },
-        { type: "ingredient", name: "Ground Beef", cookTime: 10 },
-        { type: "ingredient", name: "Egg", cookTime: 3 },
-        { type: "ingredient", name: "Breadcrumbs", cookTime: 5 },
-        { type: "ingredient", name: "Spices", cookTime: 0 },
-        { type: "ingredient", name: "Flour", cookTime: 0 },
-        { type: "ingredient", name: "Olive Oil", cookTime: 2 },
-        { type: "ingredient", name: "Garlic", cookTime: 1 },
-        { type: "ingredient", name: "Tomatoes", cookTime: 4 },
-        { type: "ingredient", name: "Onion", cookTime: 3 },
-        { type: "ingredient", name: "Lettuce", cookTime: 1 },
-        { type: "ingredient", name: "Cucumber", cookTime: 2 },
-        { type: "ingredient", name: "Tomato", cookTime: 2 },
+        { type: "ingredient", name: "Ground Beef2", cookTime: 10 },
+        { type: "ingredient", name: "Egg2", cookTime: 3 },
+        { type: "ingredient", name: "Breadcrumbs2", cookTime: 5 },
+        { type: "ingredient", name: "Spices2", cookTime: 0 },
+        { type: "ingredient", name: "Flour2", cookTime: 0 },
+        { type: "ingredient", name: "Olive Oil2", cookTime: 2 },
+        { type: "ingredient", name: "Garlic2", cookTime: 1 },
+        { type: "ingredient", name: "Tomatoes2", cookTime: 4 },
+        { type: "ingredient", name: "Onion2", cookTime: 3 },
+        { type: "ingredient", name: "Lettuce2", cookTime: 1 },
+        { type: "ingredient", name: "Cucumber2", cookTime: 2 },
+        { type: "ingredient", name: "Tomato2", cookTime: 2 },
       ];
 
       for (const entry of entries) {
@@ -394,25 +394,25 @@ describe("Task 3", () => {
         expect(resp6.status).toBe(200);
       }
 
-      const resp3 = await getTask3("Mega Feast");
+      const resp3 = await getTask3("Mega Feast2");
       expect(resp3.status).toBe(200);
 
       expect(resp3.body).toEqual({
-        name: "Mega Feast",
+        name: "Mega Feast2",
         cookTime: 737, // Sum of all cook times
         ingredients: expect.arrayContaining([
-          { name: "Ground Beef", quantity: 20 }, // 5 * 4 (Big Meatball x4)
-          { name: "Egg", quantity: 27 }, // (3 * 4 for Big Meatball) + (5 * 3 for Super Pasta)
-          { name: "Breadcrumbs", quantity: 24 }, // 6 * 4 (Big Meatball x4)
-          { name: "Spices", quantity: 8 }, // 2 * 4 (Big Meatball x4)
-          { name: "Flour", quantity: 30 }, // 10 * 3 (Super Pasta x3)
-          { name: "Olive Oil", quantity: 23 }, // (3 * 3 for Super Pasta) + (2 * 6 for Tomato Sauce) + (1 * 2 for Veggie Salad)
-          { name: "Garlic", quantity: 30 }, // (4 * 3 for Super Pasta) + (3 * 2 for Tomato Sauce)
-          { name: "Tomatoes", quantity: 48 }, // 8 * 6 (Tomato Sauce x3)
-          { name: "Onion", quantity: 12 }, // 2 * 6 (Tomato Sauce x3)
-          { name: "Lettuce", quantity: 4 }, // Veggie Salad 2x2
-          { name: "Cucumber", quantity: 6 }, // Veggie Salad x2
-          { name: "Tomato", quantity: 8 }, // (4 * 2 for Veggie Salad)
+          { name: "Ground Beef2", quantity: 20 }, // 5 * 4 (Big Meatball x4)
+          { name: "Egg2", quantity: 27 }, // (3 * 4 for Big Meatball) + (5 * 3 for Super Pasta)
+          { name: "Breadcrumbs2", quantity: 24 }, // 6 * 4 (Big Meatball x4)
+          { name: "Spices2", quantity: 8 }, // 2 * 4 (Big Meatball x4)
+          { name: "Flour2", quantity: 30 }, // 10 * 3 (Super Pasta x3)
+          { name: "Olive Oil2", quantity: 23 }, // (3 * 3 for Super Pasta) + (2 * 6 for Tomato Sauce) + (1 * 2 for Veggie Salad)
+          { name: "Garlic2", quantity: 30 }, // (4 * 3 for Super Pasta) + (3 * 2 for Tomato Sauce)
+          { name: "Tomatoes2", quantity: 48 }, // 8 * 6 (Tomato Sauce x3)
+          { name: "Onion2", quantity: 12 }, // 2 * 6 (Tomato Sauce x3)
+          { name: "Lettuce2", quantity: 4 }, // Veggie Salad 2x2
+          { name: "Cucumber2", quantity: 6 }, // Veggie Salad x2
+          { name: "Tomato2", quantity: 8 }, // (4 * 2 for Veggie Salad)
         ]),
       });
     });

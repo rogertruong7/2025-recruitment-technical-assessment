@@ -19,6 +19,13 @@ interface ingredient extends cookbookEntry {
   cookTime: number;
 }
 
+class BadRequestError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BadRequestError";
+  }
+}
+
 // =============================================================================
 // ==== HTTP Endpoint Stubs ====================================================
 // =============================================================================
@@ -111,8 +118,62 @@ app.post("/entry", (req: Request, res: Response) => {
 // [TASK 3] ====================================================================
 // Endpoint that returns a summary of a recipe that corresponds to a query name
 app.get("/summary", (req: Request, res: Request) => {
-  // TODO: implement me
-  res.status(500).send("not yet implemented!");
+  const ingredients: Record<string, number> = {};
+  const result = { name: "", cookTime: 0, ingredients: [] as requiredItem[] };
+
+  const recursiveRecipes = (
+    entryData: recipe,
+    totalCookTime = 0,
+    quantity = 1
+  ): number => {
+    for (const item of entryData.requiredItems) {
+      const itemName = item.name;
+      const itemQuantity = item.quantity * quantity;
+
+      if (cookbook[itemName]) {
+        const itemData = cookbook[itemName];
+        if (itemData.type === "ingredient") {
+          ingredients[itemName] = (ingredients[itemName] || 0) + itemQuantity;
+          totalCookTime += itemQuantity * (itemData as ingredient).cookTime;
+        } else {
+          totalCookTime = recursiveRecipes(
+            itemData as recipe,
+            totalCookTime,
+            itemQuantity
+          );
+        }
+      } else {
+        throw new BadRequestError(`'${itemName}' is not in the cookbook.`);
+      }
+    }
+    return totalCookTime;
+  };
+
+  try {
+    const summaryName = req.query.name as string;
+
+    if (!summaryName || !cookbook[summaryName]) {
+      return res.status(400).send("Entry not found");
+    }
+
+    const entryData = cookbook[summaryName];
+    if (entryData.type === "ingredient") {
+      return res.status(400).send("Entry is an ingredient");
+    }
+
+    result.name = summaryName;
+    result.cookTime = recursiveRecipes(entryData as recipe);
+    result.ingredients = Object.entries(ingredients).map(
+      ([name, quantity]) => ({ name, quantity })
+    );
+
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error instanceof BadRequestError) {
+      return res.status(400).send(error.message);
+    }
+    return res.status(500).send("Internal server error");
+  }
 });
 
 // =============================================================================
