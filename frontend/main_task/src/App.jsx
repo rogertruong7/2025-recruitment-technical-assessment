@@ -92,6 +92,7 @@ const FilterSection = styled.section`
 const FreeRoomPage = styled.div`
   margin-left: 20px;
   margin-right: 20px;
+  margin-bottom: 30px;
 `;
 
 const BuildingSection = styled.section`
