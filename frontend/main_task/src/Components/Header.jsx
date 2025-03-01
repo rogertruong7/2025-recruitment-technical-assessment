@@ -1,11 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 const Header = () => {
+  const [open, setOpen] = useState(true);
+
+  const handleLogoClick = () => {
+    setOpen(!open);
+  };
+
   return (
     <HeaderContainer>
-      <LogoContainer>
-        <HeaderImage src={`/assets/freeRoomsLogo.png`} alt="freeRoomsLogo" />
+      <LogoContainer onClick={handleLogoClick}>
+        {open ? (
+          <HeaderImage src={`/assets/freeRoomsLogo.png`} alt="freeRoomsLogo" />
+        ) : (
+          <HeaderImage
+            src={`/assets/freeroomsDoorClosed.png`}
+            alt="freeRoomsLogoClosed"
+          />
+        )}
+
         <LogoText>Freerooms</LogoText>
       </LogoContainer>
       <ButtonsContainer>
