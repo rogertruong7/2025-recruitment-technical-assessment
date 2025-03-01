@@ -5,37 +5,9 @@ import Header from "./Components/Header";
 import OrangeButton from "./Components/OrangeButton";
 import SearchBar from "./Components/SearchBar";
 import { useEffect, useState } from "react";
+import data from './assets/data.json';
 
 function App() {
-  const buildings = [
-    { imageSrc: "agsm.webp", name: "AGSM", capacity: 9 },
-    { imageSrc: "ainsworth.webp", name: "Ainsworth Building", capacity: 16 },
-    { imageSrc: "anitab.webp", name: "Anita B Lawrence Centre", capacity: 44 },
-    {
-      imageSrc: "biologicalScience.webp",
-      name: "Biological Sciences",
-      capacity: 6,
-    },
-    {
-      imageSrc: "biologicalScienceWest.webp",
-      name: "Biological Sciences (West)",
-      capacity: 8,
-    },
-    { imageSrc: "blockhouse.webp", name: "Blockhouse", capacity: 42 },
-    { imageSrc: "businessSchool.webp", name: "Business School", capacity: 18 },
-    {
-      imageSrc: "civilBuilding.webp",
-      name: "Civil Engineering Building",
-      capacity: 8,
-    },
-    { imageSrc: "colombo.webp", name: "Colombo Building", capacity: 5 },
-    {
-      imageSrc: "cseBuilding.webp",
-      name: "Computer Science & Engineering (K17)",
-      capacity: 7,
-    },
-  ];
-
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -67,7 +39,7 @@ function App() {
         </FilterSection>
         <section>
           <BuildingSection>
-            {buildings.map((building, index) => (
+            {data.map((building, index) => (
               <Building
                 building={building}
                 isMobile={isMobile}

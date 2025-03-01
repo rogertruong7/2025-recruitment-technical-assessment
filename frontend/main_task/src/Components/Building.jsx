@@ -15,15 +15,15 @@ const Building = ({ building, isMobile }) => {
 
   return (
     <BuildingContainer>
-      <BuildingImage src={`/assets/${building.imageSrc}`} alt={building.name} />
+      <BuildingImage src={`/assets/${building.building_picture}`} alt={building.name} />
       <BuildingButton className="building_name">{building.name}</BuildingButton>
       <RoomsAvailable>
         <GreenCircle size={15} />
         {!isMobile ? (
-          <b style={{ margin: 0 }}>{building.capacity} rooms available</b>
+          <b style={{ margin: 0 }}>{building.rooms_available} rooms available</b>
         ) : (
           <b>
-            {building.capacity} / {building.capacity}
+            {building.rooms_available} / {building.rooms_available}
           </b>
         )}
       </RoomsAvailable>
