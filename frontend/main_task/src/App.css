@@ -1,0 +1,12 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.material-icons {
+  color: #ef7021; /* Change this to your desired colour */
+}
+.material-icons.top-header:hover {
+  color: white; /* Change this to your desired colour */
+}
+
